@@ -152,6 +152,17 @@ $(function() {
     resetFilters: function() {
     },
 
+    editList:function(gl) {
+      console.debug("editlist");
+    },
+
+    newList:function() {
+      console.debug("newlist");
+          new ManageTodosView();
+          self.undelegateEvents();
+          // delete self; // ELP
+    }
+
     addOne: function(gl) {
       console.debug("addOne!", gl)
       var view = new GroceryListView({model: gl});
@@ -190,6 +201,51 @@ $(function() {
 
   });
 
+
+  var EditListView = Parse.View.extend({
+    events: {
+      "submit form.edit-list-form": "edit",
+    },
+
+    el: ".content",
+    
+    initialize: function() {
+      _.bindAll(this, "edit");
+      this.render();
+    },
+
+    edit: function(e) {
+      console.debug("edit");
+      var self = this;
+      var store = this.$("#list-store").val();
+      
+      acl = new Parse.ACL()
+      acl.setPublicReadAccess(true) // Make public so we can find user ID's by querying the table
+
+      Parse.User.signUp(username, password, { ACL: acl }, {
+        success: function(user) {
+          new ManageGroceryListsView();
+          self.undelegateEvents();
+          delete self;
+        },
+
+        error: function(user, error) {
+          // ELP
+          self.$(".edit-list-form .error").html(error.message).show();
+          this.$(".edit-list-form button").removeAttr("disabled");
+        }
+      });
+
+      this.$(".edit-list-form button").attr("disabled", "disabled");
+
+      return false;
+    },
+
+    render: function() {
+      this.$el.html(_.template($("#edit-list-form").html()));
+      this.delegateEvents();
+    }
+  });
 
 
   // LOG IN RELATED
