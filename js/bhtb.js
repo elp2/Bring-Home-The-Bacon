@@ -7,6 +7,13 @@ $(function() {
 // GroceryItem
 // ------------
 
+  userQuery = new Parse.Query("User");
+  users = []
+  userQuery.find({success:function(allUsers){
+    users = allUsers;
+  }});
+
+
 
   // Our basic Todo model has `content`, `order`, and `done` attributes.
   var GroceryItem = Parse.Object.extend("GroceryItem", {
@@ -96,7 +103,6 @@ $(function() {
     clear: function() {
       this.model.destroy();
     }
-
   });
 
 // GroceryList
@@ -286,12 +292,14 @@ $(function() {
       "click #toggle-all": "toggleAllComplete",
       "click .log-out": "logOut",
       "click ul#filters a": "selectFilter",
+      "keypress #users-input": "addUser",
+      "click #new-item-button": "addNewItem",
     },
 
     el: ".content",
     
     initialize: function(existingList) {
-      console.debug("init editList")
+      this.list = existingList;
       if (null != existingList) {
         this.store = existingList.store;
         this.addItems(); // ELP find id from existing list
@@ -299,19 +307,59 @@ $(function() {
         this.store = "...";
         this.items = null;
       }
-      
+
       store = this.store;
       this.$el.html(_.template($("#edit-lists-template").html()));
-
 
       _.bindAll(this, 'saveList', 'addOne', 'addAll', 'addSome', 'render', 'toggleAllComplete', 'logOut', 'createOnEnter');
 
       this.render();
     },
 
+    addNewItem: function(item) {
+      var newItemText = $("#new-item-text").val();
+      this.items.create({
+        ACL:  this.list.getACL(),
+        name: newItemText,
+      })
+      $("#new-item-text").val("");
+    },
+
+    addUser: function(e) {
+      if (e.keyCode != 13) 
+        return;
+
+      var user = $("#users-input").val();
+      // find id for selected user
+
+      var userId = null;
+      for(var i=0; i<users.length;i++) {
+        console.debug(users[i].get("username"), user)
+        if(user === users[i].get("username")) {
+          console.debug("???")
+          userId = users[i].id;
+        }
+      }
+
+      if(null != userId) {
+        acl = this.list.getACL();
+        acl.setWriteAccess(userId, true);
+        this.list.setACL(acl);
+        this.list.save({success:function(e){
+          $("#users-message-div").html('<div class="alert alert-success">List successfully shared with  \'' + user + '\'.<a href="#" class="close" data-dismiss="alert">&times;</a></div>');
+        }});
+
+        this.items.each(function(item){item.setACL(acl); item.save();});
+      } else {
+      }
+    },
+
     addItems: function(listName) {
-      // Get all items for this id
-            // Create our collection of Todos
+      this.$("#edit-creation").hide();
+      this.$("#edit-after").show();
+
+      $('#users-input').typeahead({source:function(query,process){ return users.map(function(u){return u.get("username");});}});
+
       this.items = new GroceryItemList;
 
       // Setup the query for the collection to look for todos from the current user
@@ -334,12 +382,14 @@ $(function() {
       var self = this;
       var store = this.$("#list-store").val();
       var acl = new Parse.ACL()
-      acl.setPublicReadAccess(true) // ELP - set to w on user as well
+      acl.setWriteAccess(Parse.User.current(), true);
+
       var gl = new GroceryList();
       gl.save({store: store, ACL: acl}, {
       success: function(savedList) {
+        self.list = savedList;
         self.store = savedList.get("store");
-        self.addItems();
+        self.addItems(savedList);
         self.render();
       },
       error: function(model, error) {

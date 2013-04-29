@@ -1,0 +1,17 @@
+.no-bullets
+{
+    list-style-type: none;
+    padding:0; 
+    margin:0;
+    padding-bottom: 10px;
+}
+.no-bullets li 
+{
+	padding-bottom: 10px;
+}
+
+#credits
+{
+	position: fixed;
+   	bottom: 0px;
+}

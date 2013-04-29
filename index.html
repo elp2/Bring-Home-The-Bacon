@@ -1,38 +1,34 @@
 <!doctype html>
 <head>
-  <meta charset="utf-8">
+<meta charset="utf-8">
 
-  <title>My Parse App</title>
-  <meta name="description" content="My Parse App">
-  <meta name="viewport" content="width=device-width">
-  <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/styles.css">
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.2.7.min.js"></script>
-  <script type="text/javascript" src="js/underscore-1.1.6.js"></script>
-  <script type="text/javascript" src="js/bhtb.js"></script>
-</head>
-
+<title>My Parse App</title>
+<meta name="description" content="My Parse App">
+<meta name="viewport" content="width=device-width">
+<!-- Loading Bootstrap -->
+<link href="css/bootstrap.css" rel="stylesheet">
+<!-- Loading Flat UI -->
+<link href="css/flat-ui.css" rel="stylesheet">
+<link href="css/bhtb.css" rel="stylesheet"></head>
 <body>
+<!-- BHTB App Interface -->
+<div id="bhtb" class="container">
+  <div class="title">
+    <h1>Bring Home the Bacon</h1>
+  </div>
 
+  <div class="content"></div>
+</div>
 
-    <!-- BHTB App Interface -->
+<div id="credits" class="span12">
+  Powered by
+  <a href="https://www.parse.com">Parse</a>
+  using the
+  <a href="https://www.parse.com/docs/js_guide">JavaScript SDK</a>
+</div>
 
-    <div id="bhtb">
-      <div class="title">
-        <h1>Bring Home the Bacon</h1>
-      </div>
-
-      <div class="content">
-      </div>
-    </div>
-
-    <div id="credits">
-      Powered by <a href="https://www.parse.com">Parse</a> using the <a href="https://www.parse.com/docs/js_guide">JavaScript SDK</a>
-    </div>
-
-    <!-- Templates -->  
-    <script type="text/template" id="login-template">
+<!-- Templates -->
+<script type="text/template" id="login-template">
       <header id="header"></header>
       <div class="login">
         <form class="login-form">
@@ -53,48 +49,79 @@
       </div>
     </script>
 
-    <script type="text/template" id="view-list-template">      
-    <li>
-      <%= store %>
-    </li>
+<script type="text/template" id="view-list-template">          
+      <a href="#" class="btn btn-block btn-info">
+      <%= store %></a>
     </script>
 
-    <script type="text/template" id="manage-lists-template">      
-    <header id="header">Lists
-    </header>
-      <ul id="lists">
-      </ul>
-
-      <a href="#" class="new-list">New List</a>
-    </script>
-
-
-    <script type="text/template" id="edit-lists-template">      
-    <header id="header">Edit List
-    </header>
-    <div class="edit">
-      <form class="edit-list-form">
-            <div class="error" style="display:none"></div>
-            <input type="text" id="list-store" placeholder="Store" value="<%= store %>"/>
-            <button>New List</button>
-
-            <ul id="items" style="display:none">
-              
-            </ul>
-      </form>
+<script type="text/template" id="manage-lists-template">      
+    <h2>Lists</h2>
+    <div class="span3">
+          <ul id="lists" class="no-bullets"></ul>
+    </div>
+    <div class="span12">
+      <div class="span2">
+          <a href="#" class="btn btn-large btn-block btn-success new-list">Create List</a>      
+      </div>
     </div>
     </script>
 
-    <script type="text/template" id="item-template">      
+<script type="text/template" id="edit-lists-template">      
+    <div class="edit">
+      
+      <form class="edit-list-form">
+      <div class="row">
+            <div class="error" style="display:none"></div>
+            Store: <input type="text" id="list-store" placeholder="Store" value="<%= store %>"/></div>
+
+      <div id="edit-creation" class="row">
+        <div class="span3" id="new-list-button">
+          <a href="#" onClick="$(this).closest('form').submit();" class="btn btn-large btn-block btn-primary">Create List</a>
+        </div>
+      </div>
+      </div>
+
+      <div id="edit-after" style="display:none">
+      
+        <div class="row" id="users-div">
+          Users: <input type="text" id="users-input" data-provide="typeahead" autocomplete="off" >
+          <div id="users-message-div" class="span3"></div>
+        </div>
+      <div class="row">
+        <form class="new-item-form">
+          <input type="text" id="new-item-text">
+          <a href="#" class="btn btn-block btn-primary" id="new-item-button">Add Item</a>  
+        </form>
+      </div>
+
+        <ul id="items" class="no-bullets"></ul>              
+      </div>
+      </form>
+
+    </div>
+    </script>
+
+<script type="text/template" id="item-template">      
       <li class="<%= done ? 'completed' : '' %>">
   <div class="view">
-    <input class="toggle" type="checkbox" <%= done ? 'checked="checked"' : '' %>>
     <label class="todo-content"><%= name %></label>
-    <button class="todo-destroy"></button>
   </div>
-  <input class="edit" value="<%= name %>">
       </li>
     </script>
+
+<script src="flatjs/jquery-1.8.2.min.js"></script>
+<script src="flatjs/jquery-ui-1.10.0.custom.min.js"></script>
+<script src="flatjs/jquery.dropkick-1.0.0.js"></script>
+<script src="flatjs/custom_checkbox_and_radio.js"></script>
+<script src="flatjs/custom_radio.js"></script>
+<script src="flatjs/jquery.tagsinput.js"></script>
+<script src="flatjs/bootstrap-tooltip.js"></script>
+<script src="flatjs/jquery.placeholder.js"></script>
+<script src="flatjs/application.js"></script>
+<script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.2.7.min.js"></script>
+<script type="text/javascript" src="js/underscore-1.1.6.js"></script>
+<script type="text/javascript" src="js/bhtb.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
 
 </body>
 
