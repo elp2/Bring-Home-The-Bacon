@@ -64,21 +64,37 @@
     </header>
       <ul id="lists">
       </ul>
+
+      <a href="#" class="new-list">New List</a>
     </script>
 
 
     <script type="text/template" id="edit-lists-template">      
     <header id="header">Edit List
     </header>
-    <form class="edit-list-form">
-      <h2><%=action %> List</h2>
-          <div class="error" style="display:none"></div>
-          <input type="text" id="list-store" placeholder="Store" value="<%= store %>"/>
-          <button><%=action %> List</button>
-    </form>
+    <div class="edit">
+      <form class="edit-list-form">
+            <div class="error" style="display:none"></div>
+            <input type="text" id="list-store" placeholder="Store" value="<%= store %>"/>
+            <button>New List</button>
+
+            <ul id="items" style="display:none">
+              
+            </ul>
+      </form>
+    </div>
     </script>
 
-
+    <script type="text/template" id="item-template">      
+      <li class="<%= done ? 'completed' : '' %>">
+  <div class="view">
+    <input class="toggle" type="checkbox" <%= done ? 'checked="checked"' : '' %>>
+    <label class="todo-content"><%= name %></label>
+    <button class="todo-destroy"></button>
+  </div>
+  <input class="edit" value="<%= name %>">
+      </li>
+    </script>
 
 </body>
 
